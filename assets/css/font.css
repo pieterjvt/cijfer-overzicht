@@ -1,0 +1,35 @@
+@font-face {
+    font-family: "Arboria";
+    src: url("../font/arboria-light.woff2") format("woff2"),
+        url("/assets/font/arboria-light.woff") format("woff");
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arboria";
+    src: url("../font/arboria-regular.woff2") format("woff2"),
+        url("../font/arboria-regular.woff") format("woff");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arboria";
+    src: url("../font/arboria-medium.woff2") format("woff2"),
+        url("../font/arboria-medium.woff") format("woff");
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Arboria";
+    src: url("../font/arboria-bold.woff2") format("woff2"),
+        url("../font/arboria-bold.woff") format("woff");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}

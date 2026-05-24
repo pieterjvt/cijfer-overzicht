@@ -1,0 +1,610 @@
+/* TODO: clean up, add comments */
+
+/* -- GLOBAL -- */
+/* light theme (default) */
+:root {
+    --top-padding: env(safe-area-inset-top);
+    --menu-width: clamp(275px, 80vw, 400px);
+
+    --text-color: #000000;
+    --body-bg: #f0f0f0;
+
+    --header-bg: #1f97f9;
+    --content-bg: #ffffff;
+    --footer-bg: #f0f0f0;
+}
+
+/* in landscape use hardcoded padding for top */
+@media (orientation: landscape) {
+    :root {
+        --top-padding: 24px;
+    }
+}
+
+/* dark mode */
+[data-theme="dark"] {
+    --text-color: #ffffff;
+    --body-bg: #011322;
+
+    --header-bg: #012a4a;
+    --content-bg: #151518;
+    --footer-bg: #011322;
+}
+
+*,
+*::before,
+*::after {
+    /* disable selecting text on mobile, source: https://stackoverflow.com/a/4407335 */
+    -webkit-user-select: none;
+    user-select: none;
+
+    box-sizing: border-box;
+
+    margin: 0;
+}
+
+/* BODY */
+html,
+body {
+    /* based on viewport to include status bar */
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+
+    /* arboria is used mostly and sometimes a font similair to open sans */
+    font-family: "Arboria", "Open Sans", sans-serif;
+    font-size: 16px;
+
+    overflow: hidden;
+    background-color: var(--header-bg);
+}
+
+/* hidden, invisible and take up no space */
+.hidden {
+    visibility: hidden !important;
+    min-height: 0 !important;
+    height: 0 !important;
+    opacity: 0 !important;
+}
+
+/* hidden off screen */
+.hidden-right { transform: translateX(100%) !important; }
+.hidden-left { transform: translateX(-100%) !important; }
+
+/* orange dot, headers */
+.orange-dot::after {
+    content: ".";
+    color: #ff8205;
+    font-size: 28px;
+
+    padding-left: 3px;
+}
+
+/* NAV BUTTON */
+.btn-nav {
+    position: absolute;
+    left: calc(10px + env(safe-area-inset-left));
+    top: calc(5px + var(--top-padding));
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: none;
+    color: #ffffff;
+    border: none;
+
+    z-index: 998;
+    line-height: 0;
+    transform-origin: center center;
+}
+
+/* hide icon based on class */
+.btn-nav.icon-burger .icon-arrow,
+.btn-nav.icon-arrow .icon-burger {
+    display: none;
+
+    /* apple fix, don't shrink */
+    flex-shrink: 0;
+}
+
+/* larger when pressed */
+.btn-nav:active {
+    background: none;
+    outline: none;
+
+    transform: scale(1.1);
+}
+
+/* apple */
+[data-type="apple"] .btn-nav {
+    /* liquid glass look */
+    background: rgba(191, 237, 255);
+    border: 0.7px solid #ffffff;
+    border-radius: 50%;
+    color: #000000;
+
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
+    transition: fill 0.25s ease;
+}
+
+/* apple :active */
+[data-type="apple"] .btn-nav:active {
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    background: rgba(191, 237, 255);
+    color: #ffffff;
+}
+
+/* dark mode + apple */
+[data-theme="dark"][data-type="apple"] .btn-nav {
+    background: rgba(1, 32, 58);
+    color: #ffffff;
+    border: 0.7px solid #505050;
+}
+
+/* dark mode + apple :active */
+[data-theme="dark"][data-type="apple"] .btn-nav:active {
+    background: hsla(0, 0%, 29%, 0.25);
+    color: rgb(163, 163, 163);
+}
+
+/* VIEWS */
+.views {
+    height: 100vh;
+    width: 100%;
+
+    /* v = view, h = height */
+    --v-header-h: 56px;
+    --v-subheader-h: 24px; /* TODO: include env here?? */
+
+    --v-subnav-h: 38px;
+    --v-footer-h: 22px;
+}
+
+/* -- VIEW -- */
+.view {
+    position: absolute;
+
+    height: 100vh;
+    width: 100%;
+    inset: 0;
+
+    display: grid;
+    /* rows: header subheader content subnav footer */
+    grid-template-rows: auto auto 1fr auto auto;
+
+    background: var(--body-bg);
+    color: var(--text-color);
+
+    transform: translateX(0);
+    /* left right transition, invisible after */
+    transition: transform 0.2s ease-in-out /*, visibility 0s linear 0.2s; */
+}
+
+/* LOADER */
+.view-loader {
+    position: absolute;
+    top: calc(var(--v-header-h) + var(--top-padding));
+    left: 0;
+    right: 0;
+    bottom: calc(var(--v-footer-h) + env(safe-area-inset-bottom) + 1px); /* 1px for the footer border */
+    
+    display: none; /* hide by default */
+    align-items: center;
+    justify-content: center;
+
+    /* if already loaded: background-color: rgba(100, 100, 100, 0.1); */
+    background-color: var(--content-bg);
+
+    z-index: 9999;
+}
+
+/* show loader when view is "loading" */
+.view.loading .view-loader { display: flex; }
+
+/* LOADER SPINNER */
+.loader-spinner {
+    width: 70px;
+    height: 70px;
+    display: block;
+}
+
+/* no spinner for apple */
+/* TODO: when content is already loaded an apple blue spinner is shown instead */
+[data-type="apple"] .loader-spinner { display: none; }
+
+.loader-spinner svg {
+    animation: spin 1.4s linear infinite;
+    overflow: visible;
+}
+
+.loader-spinner circle {
+    fill: none;
+    stroke: #21a5ff;
+    stroke-width: 0.9;
+    stroke-dasharray: 30;
+    stroke-dashoffset: 28;
+    animation: dash 1.4s ease-in-out infinite;
+}
+
+/* spin animations */
+@keyframes spin {
+    to {
+        transform: rotate(270deg);
+    }
+}
+
+@keyframes dash {
+
+    0%,
+    100% {
+        stroke-dashoffset: 28;
+        transform: rotate(0deg);
+    }
+
+    50% {
+        stroke-dashoffset: 8;
+        transform: rotate(135deg);
+    }
+
+    100% {
+        transform: rotate(450deg);
+    }
+}
+
+/* HEADER */
+.view-header {
+    box-sizing: content-box; /* ignore padding */
+    
+    height: calc(var(--v-header-h)  - 8px); /* TODO: check if required */
+    padding-bottom: 8px;
+    padding-top: var(--top-padding);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: var(--header-bg);
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    z-index: 10;
+}
+
+/* SUB HEADER (optional) */
+.view-subheader {
+    height: var(--v-subheader-h);
+    padding: 0 16px;
+
+    display: flex;
+    align-items: center;
+    
+    background: var(--content-bg);
+    color: var(--text-color);
+    border-bottom: 0.7px solid #cecece;
+
+    z-index: 9;
+}
+
+/* CONTENT */
+.view-content {
+    position: relative;
+
+    height: 100%;
+    min-height: 0;
+
+    background: var(--content-bg);
+
+    overflow-y: auto; /* scroll overflow under footer */
+}
+
+/* SUB NAV (optional) */
+.view-subnav {
+    height: var(--v-subnav-h);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    background: var(--content-bg);
+    border-top: 0.5px solid #cecece;
+}
+
+/* FOOTER */
+.view-footer {
+    box-sizing: content-box; /* ignore padding */
+    
+    height: var(--v-footer-h);
+    padding-bottom: env(safe-area-inset-bottom); /* TODO: update? */
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--footer-bg);
+    color: #707070;
+    border-top: 0.7px solid #d3d3d3;
+
+    font-family: "Open Sans", sans-serif;
+    font-size: 10px;
+}
+
+/* add safe margins (for landscape) */
+/* TODO: check if still required, use calc(-env(...))? */
+.view-subheader,
+.view-subnav,
+.view-content,
+.view-footer {
+    margin-left: env(safe-area-inset-left);
+    margin-right: env(safe-area-inset-right);
+}
+
+/* when empty, dont use any space but avoid breaking grid template rows */
+.view-subheader:empty,
+.view-subnav:empty {
+    height: 0;
+    min-height: 0;
+
+    overflow: hidden;
+    visibility: hidden;
+}
+
+/* SUB VIEWS */
+.subviews {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    overflow-x: auto;
+    /* sideways swipe snapping */
+    scroll-snap-type: x mandatory;
+    scroll-behavior: auto;
+    
+    /* hide scroll bar */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+/* hide webkit scrollbar */
+.subviews::-webkit-scrollbar { display: none; }
+
+/* -- SUB VIEW -- */
+.subview {
+    flex: 0 0 100%;
+
+    height: 100%;
+    width: 100%;
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+
+    background: var(--content-bg);
+
+    /* swipe snap to start */
+    scroll-snap-align: start;
+
+    /* sv = subview, h = height */
+    --sv-header-h: 46px;
+}
+
+/* SV HEADER */
+.subview-header {
+    height: var(--sv-header-h);
+    padding-bottom: 12px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    background: var(--content-bg);
+    border-bottom: 0.7px solid #cecece;
+    
+    font-family: "Open Sans", sans-serif; /* use open sans */
+    font-weight: 620;
+}
+
+/* when empty, dont use any space but avoid breaking grid template rows */
+/* TODO: reuse the other :empty rule */
+.subview-header:empty {
+    height: 0;
+    min-height: 0;
+
+    overflow: hidden;
+    visibility: hidden;
+}
+
+/* SV CONTENT */
+.subview-content {
+    min-height: 0;
+    
+    background-color: var(--content-bg);
+
+    overflow-y: auto;
+}
+
+/* -- ELEMENTS -- */
+/* DOTS */
+.view-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.view-dots > .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.view-dots > .dot.active {
+    background: #1f97f9;
+}
+
+/* GRADE LIST */
+.grade-list {
+    list-style: none;
+
+    color: var(--text-color);
+
+    /* g = grade, p = padding, f = font, s = size, w = weight */
+    --g-info-p: 20px;
+    --g-desc-fs: 13.5px;
+
+    --g-rating-fw: 600;
+    --g-date-fs: 11px;
+
+    --g-padding: 10px;
+}
+
+/* slightly more padding for apple */
+[data-type="apple"] .grade-list { --g-padding: 12px; }
+
+/* GRADE ITEM */
+.grade-item {
+    position: relative;
+
+    height: 62px;
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    padding: 8px var(--g-padding) 8px var(--g-padding); /* TODO: prettier? */
+}
+
+/* border */
+.grade-item::after {
+    content: "";
+
+    height: 0.5px;
+
+    position: absolute;
+    bottom: 0;
+    right: calc(2px + var(--g-padding)); /* TODO: prettier? */
+    left: calc(2px + var(--g-padding));
+
+    background: #d4d4d4;
+
+    z-index: 0;
+}
+
+/* thicker for apple */
+[data-type="apple"] .grade-item::after { height: 1px; }
+
+/* bold */
+.grade-item.bold { --g-rating-fw: 600; }
+
+/* blue */
+.grade-item.blue::before {
+    content: "";
+    
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: calc(36px + var(--g-padding) * 2); /* TODO: prettier? */
+
+    background: #e7f3fe;
+    
+    z-index: 0;
+}
+
+/* dark mode + blue */
+[data-theme="dark"] .grade-item.blue::before { background: #012a4a; }
+
+/* TODO: check if required */
+.grade-item > * {
+    position: relative;
+
+    z-index: 1;
+}
+
+/* info (title, desc) */
+.grade-info {
+    min-width: 0;
+    padding-right: calc(var(--g-info-p) + var(--g-padding)); /* TODO: prettier? */
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* TODO: check if required */
+.grade-info > * {
+    width: 100%;
+    min-width: 0;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* title */
+.grade-info .title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* description */
+.grade-info .desc {
+    font-family: "Open Sans", sans-serif;
+    font-size: var(--g-desc-fs);
+    font-weight: 400;
+}
+
+/* right side (count, rating, date) */
+.grade-right {
+    position: relative;
+
+    margin-left: auto;
+
+    display: flex;
+    align-items: flex-start;
+}
+
+/* count */
+.count {
+    position: absolute;
+    right: calc(35px + var(--g-padding)); /* TODO: prettier? */
+    top: calc((62px - 8px - 8px) / 2);
+
+    font-size: 10px;
+
+    transform: translateY(-50%);
+}
+
+/* grade (rating, date) */
+.grade {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* rating */
+.grade > .rating {
+    font-size: 18px;
+    font-weight: var(--g-rating-fw);
+}
+
+/* date */
+.grade > .date {
+    font-family: sans-serif;
+    font-size: var(--g-date-fs);
+}

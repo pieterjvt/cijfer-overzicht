@@ -1,0 +1,70 @@
+/* TODO: clean up, add comments */
+
+.view-latest {
+    --v-subnav-h: 38px;
+}
+
+.view-latest .view-subnav {
+    padding-right: 12px;
+
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.view-latest .view-subnav button {
+    padding: 0;
+
+    /* remove default button styling */
+    border: none;
+    background: none;
+    color: #1f97f9;
+
+    font-size: 16px;
+    font-weight: 500;
+    font-family: "Open Sans", sans-serif;
+
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.view-latest .view-subnav button:focus,
+.view-latest .view-subnav button:active {
+    background: none;
+    box-shadow: none;
+}
+
+.view-periods {
+    --v-subheader-h: 24px;
+}
+
+.view-periods .view-subheader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-bottom: none;
+}
+
+.view-periods .grade-list {
+    --g-info-p: 0px;
+    --g-desc-fs: 12px;
+
+    --g-rating-fw: 400;
+    --g-date-fs: 13px;
+}
+
+.view-periods .grade-item::after {
+    height: 1px;
+
+    background: #e9e9e9;
+}
+
+[data-theme="dark"] .view-periods .grade-item::after {
+    height: 1px;
+
+    background: #363636;
+}
+
+.view-periods .grade .rating {
+    font-family: "Open Sans", sans-serif;
+}
